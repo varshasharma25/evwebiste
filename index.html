@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Visualization | Interactive Tutorial Lab</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- GSAP for Dynamic Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container hero-content">
+            <h1 id="heroTitle">Engineering Visualization</h1>
+            <p class="hero-subtitle" id="heroSubtitle">Virtual Laboratory Experience for Modern Engineers</p>
+            <div class="hero-img-container">
+                <img src="images/lab_manual_cover.png" alt="Lab Manual" class="hero-img" id="heroImg">
+            </div>
+            <div style="margin-top: 3.5rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <a href="#about" class="hero-btn hero-btn-outline">Learn More</a>
+                <a href="practical3.html" class="hero-btn hero-btn-primary">Discover Practical 3 →</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Introduction Section (Restored Old Feature) -->
+        <section id="about" class="reveal">
+            <div class="card glass-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span
+                        style="background: var(--primary-blue); padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600; color: var(--accent-blue); font-size: 0.9rem;">INTRODUCTION</span>
+                </div>
+                <h2>The Language of Engineering</h2>
+                <p>Engineering Visualization is the language of engineers. It involves the graphical representation of
+                    physical objects and systems, allowing for precise communication between designers, architects, and
+                    manufacturers.</p>
+                <p style="margin-top: 1rem;">Engineering curves like Cycloids, Involutes, and Spirals play a crucial
+                    role in mechanical and civil engineering, finding applications in gear tooth profiles, bridge
+                    arches, and specialized mechanical paths.</p>
+            </div>
+        </section>
+
+        <!-- Dynamic Features -->
+        <section class="reveal">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span
+                        style="background: var(--primary-blue); padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600; color: var(--accent-blue); font-size: 0.9rem;">LAB
+                        FEATURES</span>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-item reveal">
+                        <span class="feature-icon">✨</span>
+                        <h3>Interactive Formation</h3>
+                        <p>Watch step-by-step construction of Hypocycloids and Spirals with animated tracing.</p>
+                    </div>
+                    <div class="feature-item reveal">
+                        <span class="feature-icon">📐</span>
+                        <h3>Precision Geometry</h3>
+                        <p>Built using exact parametric equations to ensure mathematical accuracy in every drawing.</p>
+                    </div>
+                    <div class="feature-item reveal">
+                        <span class="feature-icon">💻</span>
+                        <h3>Virtual Lab</h3>
+                        <p>Access the laboratory experience anytime, anywhere, on any mobile or desktop device.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subject & University Details (Restored Old Features) -->
+        <section class="reveal">
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 300px;">
+                        <h2>Department & Curriculum</h2>
+                        <p>This virtual repository is designed to aid first-year students in mastering complex
+                            visualization techniques as per the <strong>CVM University</strong> guidelines.</p>
+
+                        <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="glass-card"
+                                style="padding: 1rem; border-radius: 15px; border-left: 4px solid var(--accent-blue);">
+                                <small style="color: var(--text-muted);">Subject</small>
+                                <p style="font-weight: 600;">Eng. Visualization</p>
+                            </div>
+                            <div class="glass-card"
+                                style="padding: 1rem; border-radius: 15px; border-left: 4px solid var(--accent-blue);">
+                                <small style="color: var(--text-muted);">Level</small>
+                                <p style="font-weight: 600;">First Year</p>
+                            </div>
+                            <div class="glass-card"
+                                style="padding: 1rem; border-radius: 15px; border-left: 4px solid var(--accent-blue);">
+                                <small style="color: var(--text-muted);">Branch</small>
+                                <p style="font-weight: 600;">All Branches</p>
+                            </div>
+                            <div class="glass-card"
+                                style="padding: 1rem; border-radius: 15px; border-left: 4px solid var(--accent-blue);">
+                                <small style="color: var(--text-muted);">University</small>
+                                <p style="font-weight: 600;">CVM University</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="flex: 0.8; min-width: 300px; text-align: center;">
+                        <div
+                            style="background: var(--primary-gradient); padding: 2.5rem; border-radius: 30px; box-shadow: var(--shadow);">
+                            <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">Ready to Begin?</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">Construction of Engineering Curves:
+                                Practical 3</p>
+                            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--primary-blue);">
+                            <a href="practical3.html" class="btn" style="width: 100%;">Enter Lab Environment</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <a href="practical3.html" class="btn btn-floating" id="floatingCTA">Get Started →</a>
+
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.9rem; letter-spacing: 2px;">VIRTUAL LAB TEAM</p>
+            <div class="team-list" style="font-size: 1.1rem; margin-top: 0.5rem;">
+                Varsha Sharma • Shlok Patel • Vallabh Mehrotra
+            </div>
+            <p style="margin-top: 2rem; font-size: 0.8rem; opacity: 0.5;">© 2026 Engineering Visualization Lab •
+                Education for the Future</p>
+        </div>
+    </footer>
+
+    <script>
+        // GSAP Animations with Visibility Safety
+        if (typeof gsap !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Initial setup for reveal elements (hide them via JS so they stay visible if JS fails)
+            gsap.set('.reveal', { opacity: 0, y: 50 });
+            gsap.set('#floatingCTA', { x: 150, opacity: 0 });
+
+            // Hero Entrance Timeline
+            const tl = gsap.timeline();
+            tl.from('#heroTitle', { y: 60, opacity: 0, duration: 1, ease: 'power4.out' })
+                .from('#heroSubtitle', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+                .from('#heroImg', { scale: 0.7, opacity: 0, duration: 1.2, ease: 'back.out(1.7)' }, '-=0.5')
+                .from('.btn:not(.hero-btn)', { y: 20, opacity: 0, stagger: 0.2, duration: 0.8 }, '-=0.8');
+
+            // Hero Parallax on Scroll
+            window.addEventListener('scroll', () => {
+                const scroll = window.scrollY;
+                gsap.to('#heroImg', { rotation: scroll * 0.03, y: scroll * 0.1, duration: 0.5 });
+            });
+
+            // Reveal Sections
+            gsap.utils.toArray('.reveal').forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    y: 0,
+                    opacity: 1,
+                    duration: 1.2,
+                    ease: 'power2.out'
+                });
+            });
+
+            // Floating CTA
+            gsap.to('#floatingCTA', {
+                scrollTrigger: {
+                    trigger: 'body',
+                    start: '600px top',
+                    toggleActions: 'play none none reverse'
+                },
+                x: 0,
+                opacity: 1,
+                duration: 0.6,
+                ease: 'back.out(1.4)'
+            });
+        }
+    </script>
+</body>
+
+</html>

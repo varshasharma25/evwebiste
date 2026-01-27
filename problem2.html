@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 2 - Archimedean Spiral | Virtual Lab</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        #tutorialCanvas {
+            background: #fff;
+            border: 1px solid var(--primary-blue);
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Problem 2: Archimedean Spiral</h1>
+            <p>Interactive Step-by-Step Construction</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="drawing-display">
+                <img src="images/spiral_final.png" alt="Archimedean Spiral Final" class="drawing-img">
+            </div>
+            <div class="data-box">
+                <p><strong>GIVEN DATA:</strong></p>
+                <p>AB = 30 mm, AC = 40 mm, ∠BAC = 45°. A is pole. 1 Convolution.</p>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn" onclick="startTutorial()">Watch Step-by-Step Formation</button>
+            </div>
+        </div>
+
+        <div id="tutorialSection" class="card tutorial-section hidden">
+            <h2 id="stepTitle">Step 1</h2>
+            <div class="step-info" style="margin-bottom: 1.5rem;">
+                <p id="stepDesc" class="step-desc">Loading...</p>
+            </div>
+
+            <div class="drawing-display">
+                <canvas id="tutorialCanvas" width="800" height="500"></canvas>
+            </div>
+
+            <div class="step-controls">
+                <button class="btn" id="prevBtn" onclick="prevStep()" style="background-color: #666;">Previous
+                    Step</button>
+                <button id="nextBtn" class="btn" onclick="nextStep()">Next Step</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="practical3.html" class="btn" style="background-color: #666;">← Back to Practical 3</a>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('tutorialCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const scale = 5;
+
+        const darkBlue = '#1976d2';
+        const grayLine = 'rgba(0, 0, 0, 0.1)';
+        const greenCurve = '#388e3c';
+        const redPoint = '#d32f2f';
+
+        let currentStepIdx = 0;
+
+        function clear() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#f8fbff';
+            ctx.setLineDash([]);
+            for (let i = 0; i < canvas.width; i += 50) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+            for (let i = 0; i < canvas.height; i += 50) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke(); }
+        }
+
+        const steps = [
+            {
+                title: "Step 1: Pole A & Ray AX",
+                desc: "Mark point A as pole. Draw a horizontal reference ray AX extended.",
+                draw: () => {
+                    drawLine(centerX, centerY, centerX + 250, centerY, grayLine, true);
+                    drawPoint(centerX, centerY, 'A', redPoint);
+                }
+            },
+            {
+                title: "Step 2: Point C",
+                desc: "Mark point C on ray AX such that AC = 40 mm (Lead of spiral).",
+                draw: () => {
+                    drawPoint(centerX + 40 * scale, centerY, 'C', redPoint);
+                }
+            },
+            {
+                title: "Step 3: Point B at 45°",
+                desc: "Construct ∠BAC = 45°. Draw a ray and extend the line AB = 30 mm boldly.",
+                draw: () => {
+                    const ang = -45 * Math.PI / 180;
+                    const bx = centerX + Math.cos(ang) * 30 * scale;
+                    const by = centerY + Math.sin(ang) * 30 * scale;
+                    drawLine(centerX, centerY, centerX + Math.cos(ang) * 220, centerY + Math.sin(ang) * 220, grayLine, true);
+                    drawLine(centerX, centerY, bx, by, darkBlue, false, 2); // Bold line to B
+                    drawPoint(bx, by, 'B', redPoint);
+                }
+            },
+            {
+                title: "Step 4: Radial Divisions",
+                desc: "Divide the 360° angular space into 8 equal segments (45° intervals).",
+                draw: () => {
+                    for (let i = 1; i <= 8; i++) {
+                        const ang = -(i * 45) * Math.PI / 180;
+                        drawLine(centerX, centerY, centerX + Math.cos(ang) * 240, centerY + Math.sin(ang) * 240, 'rgba(0,0,0,0.03)');
+                    }
+                }
+            },
+            {
+                title: "Step 5: Radius Dividers",
+                desc: "Divide the lead AC (40mm) into 8 equal parts to find radius increments.",
+                draw: () => {
+                    for (let i = 1; i <= 8; i++) {
+                        const r = (40 * scale / 8) * i;
+                        drawPoint(centerX + r, centerY, '', 'rgba(25, 118, 210, 0.2)', 2);
+                    }
+                }
+            },
+            {
+                title: "Step 6: Locating P1-P8",
+                desc: "Locate points P1 to P8 where radial lines meet the respective radius divisions.",
+                draw: () => {
+                    for (let i = 1; i <= 8; i++) {
+                        const ang = -(i * 45) * Math.PI / 180;
+                        const r = (40 * scale / 8) * i;
+                        drawPoint(centerX + Math.cos(ang) * r, centerY + Math.sin(ang) * r, 'P' + i, redPoint, 3);
+                    }
+                }
+            },
+            {
+                title: "Step 7: Final Spiral Formation",
+                desc: "Join pole A and all points P smoothly to form the Archimedean spiral. Construction complete! ✨",
+                draw: () => {
+                    const pts = [{ x: centerX, y: centerY }];
+                    for (let i = 1; i <= 8; i++) {
+                        const ang = -(i * 45) * Math.PI / 180;
+                        const r = (40 * scale / 8) * i;
+                        pts.push({ x: centerX + Math.cos(ang) * r, y: centerY + Math.sin(ang) * r });
+                    }
+                    gsap.to({}, {
+                        duration: 3,
+                        onUpdate: function () {
+                            const prog = this.progress();
+                            clear();
+                            for (let j = 0; j < currentStepIdx; j++) if (j !== 6) steps[j].draw();
+                            ctx.beginPath(); ctx.strokeStyle = greenCurve; ctx.lineWidth = 4;
+                            ctx.setLineDash([]);
+                            ctx.moveTo(pts[0].x, pts[0].y);
+                            for (let i = 1; i < pts.length * prog; i++) { ctx.lineTo(pts[i].x, pts[i].y); }
+                            ctx.stroke();
+                        }
+                    });
+                }
+            }
+        ];
+
+        function drawLine(x1, y1, x2, y2, color, dashed = false, width = 1) {
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = width;
+            if (dashed) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
+            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        }
+        function drawPoint(x, y, label, color, size = 4) {
+            ctx.beginPath(); ctx.fillStyle = color; ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
+            if (label) { ctx.fillStyle = darkBlue; ctx.font = '600 11px Poppins'; ctx.fillText(label, x + 6, y - 6); }
+        }
+
+        function startTutorial() {
+            document.getElementById('tutorialSection').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('tutorialSection').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            currentStepIdx = 0; updateUI();
+        }
+
+        function updateUI() {
+            const step = steps[currentStepIdx];
+            document.getElementById('stepTitle').innerText = step.title;
+            document.getElementById('stepDesc').innerText = step.desc;
+            clear();
+            for (let i = 0; i <= currentStepIdx; i++) { if (i !== 6 || currentStepIdx > 6) steps[i].draw(); }
+            if (currentStepIdx === 6) steps[6].draw();
+            document.getElementById('prevBtn').disabled = (currentStepIdx === 0);
+            document.getElementById('nextBtn').innerText = (currentStepIdx === steps.length - 1) ? "Finished" : "Next Step";
+        }
+
+        function nextStep() { if (currentStepIdx < steps.length - 1) { currentStepIdx++; updateUI(); } }
+        function prevStep() { if (currentStepIdx > 0) { currentStepIdx--; updateUI(); } }
+        clear();
+    </script>
+</body>
+
+</html>

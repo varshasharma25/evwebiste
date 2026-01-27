@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archimedean Spiral | EV Lab</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .instruction-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            border-left: 3px solid var(--neon-yellow);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="engineering-grid"></div>
+
+    <div class="lab-layout">
+        <aside class="sidebar">
+            <a href="index.html" class="back-home">← BACK TO DASHBOARD</a>
+
+            <h2>Archimedean Spiral</h2>
+
+            <div class="instruction-box">
+                <p style="font-size: 0.8rem; color: var(--text-slate);">GIVEN:</p>
+                <p>AB = 30 mm, AC = 40 mm, ∠BAC = 45°. A is pole. One convolution.</p>
+            </div>
+
+            <div class="step-info" id="stepInfo">
+                <span class="step-number">READY TO START</span>
+                <p class="step-desc">Click "START TUTORIAL" to begin the construction logic.</p>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn primary" id="nextBtn" onclick="handleNext()">START TUTORIAL</button>
+                <button class="control-btn" onclick="handlePrev()">PREVIOUS</button>
+                <button class="control-btn" onclick="handleReset()">RESET</button>
+            </div>
+        </aside>
+
+        <main class="canvas-container">
+            <canvas id="constructionCanvas" width="800" height="600"></canvas>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        const canvas = document.getElementById('constructionCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const scale = 5; // mm to px
+
+        let currentStep = 0;
+        const neonYellow = '#ffff00';
+        const neonGreen = '#00ff00';
+        const neonRed = '#ff3131';
+        const textSlate = '#8892b0';
+
+        function clear() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Redraw grid pattern roughly for canvas
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 50) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 50) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
+        }
+
+        const steps = [
+            {
+                title: "Step 1: Initial Line",
+                desc: "Draw a horizontal reference line through pole A. Length ≈ 120 mm.",
+                draw: () => {
+                    drawLine(centerX, centerY, centerX + 150, centerY, neonYellow);
+                    drawPoint(centerX, centerY, 'A', neonRed);
+                }
+            },
+            {
+                title: "Step 2: Mark Point C",
+                desc: "Mark AC = 40 mm (200px) on the initial line. This is the maximum radius for one convolution.",
+                draw: () => {
+                    drawPoint(centerX + 40 * scale, centerY, 'C', neonRed);
+                }
+            },
+            {
+                title: "Step 3: Construct Angle BAC",
+                desc: "Construct an angle of 45° at pole A. This defines the direction for point B.",
+                draw: () => {
+                    const angle = -45 * (Math.PI / 180);
+                    const lx = centerX + Math.cos(angle) * 150;
+                    const ly = centerY + Math.sin(angle) * 150;
+                    drawLine(centerX, centerY, lx, ly, neonYellow, true); // dashed
+                    drawArc(centerX, centerY, 30, 0, angle, neonYellow);
+                }
+            },
+            {
+                title: "Step 4: Mark Point B",
+                desc: "On the 45° ray, mark distance AB = 30 mm (150px).",
+                draw: () => {
+                    const angle = -45 * (Math.PI / 180);
+                    const bx = centerX + Math.cos(angle) * 30 * scale;
+                    const by = centerY + Math.sin(angle) * 30 * scale;
+                    drawPoint(bx, by, 'B', neonRed);
+                }
+            },
+            {
+                title: "Step 5: Reference Divisions",
+                desc: "Divide distance AC into 8 equal parts and draw radial lines at 45° segments (total 8).",
+                draw: () => {
+                    for (let i = 1; i <= 8; i++) {
+                        const angle = -(i * 45) * (Math.PI / 180);
+                        drawLine(centerX, centerY, centerX + Math.cos(angle) * 200, centerY + Math.sin(angle) * 200, 'rgba(136, 146, 176, 0.3)', true);
+                        const radius = (40 * scale / 8) * i;
+                        drawPoint(centerX + radius, centerY, '', 'rgba(255, 255, 0, 0.3)', 2);
+                    }
+                }
+            },
+            {
+                title: "Step 6: Trace & Plot",
+                desc: "Transfer distances radially: P1 at R1 on 1st radial line, P2 at R2 on 2nd, and so on.",
+                draw: () => {
+                    ctx.beginPath();
+                    ctx.strokeStyle = neonGreen;
+                    ctx.lineWidth = 3;
+                    ctx.moveTo(centerX, centerY);
+                    const points = [];
+                    for (let i = 0; i <= 8; i++) {
+                        const angle = -(i * 45) * (Math.PI / 180);
+                        const r = (40 * scale / 8) * i;
+                        const px = centerX + Math.cos(angle) * r;
+                        const py = centerY + Math.sin(angle) * r;
+                        points.push({ x: px, y: py });
+                        drawPoint(px, py, '', neonRed, 3);
+                    }
+
+                    // Animate the path
+                    gsap.to({}, {
+                        duration: 2,
+                        onUpdate: function () {
+                            const p = this.progress();
+                            clear();
+                            for (let j = 0; j < currentStep; j++) steps[j].draw();
+
+                            ctx.beginPath();
+                            ctx.strokeStyle = neonGreen;
+                            ctx.moveTo(centerX, centerY);
+                            for (let i = 1; i <= points.length * p; i++) {
+                                if (points[i]) ctx.lineTo(points[i].x, points[i].y);
+                            }
+                            ctx.stroke();
+                        }
+                    });
+                }
+            },
+            {
+                title: "Step 7: Final Result",
+                desc: "The Archimedean Spiral is complete. Triangle ABC is highlighted within the spiral path.",
+                draw: () => {
+                    // Triangle highlight
+                    const angleB = -45 * (Math.PI / 180);
+                    const bx = centerX + Math.cos(angleB) * 30 * scale;
+                    const by = centerY + Math.sin(angleB) * 30 * scale;
+                    const cx = centerX + 40 * scale;
+                    const cy = centerY;
+
+                    drawLine(centerX, centerY, bx, by, neonGreen);
+                    drawLine(centerX, centerY, cx, cy, neonGreen);
+                    drawLine(bx, by, cx, cy, neonGreen);
+
+                    document.getElementById('nextBtn').innerText = "CONSTRUCTION COMPLETE";
+                    document.getElementById('nextBtn').disabled = true;
+                }
+            }
+        ];
+
+        function drawLine(x1, y1, x2, y2, color, dashed = false) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            if (dashed) ctx.setLineDash([5, 5]);
+            else ctx.setLineDash([]);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        function drawPoint(x, y, label, color, size = 4) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = color;
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            if (label) {
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Space Mono';
+                ctx.fillText(label, x + 8, y - 8);
+            }
+        }
+
+        function drawArc(x, y, r, start, end, color) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.arc(x, y, r, start, end, true);
+            ctx.stroke();
+        }
+
+        function handleNext() {
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                document.getElementById('stepInfo').innerHTML = `
+                    <span class="step-number">STEP ${currentStep + 1} / ${steps.length}</span>
+                    <p class="step-desc">${step.desc}</p>
+                `;
+                step.draw();
+                currentStep++;
+                document.getElementById('nextBtn').innerText = currentStep === steps.length ? "FINISH" : "NEXT STEP";
+            }
+        }
+
+        function handlePrev() {
+            if (currentStep > 0) {
+                currentStep--;
+                redrawAll();
+            }
+        }
+
+        function handleReset() {
+            currentStep = 0;
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').innerText = "START TUTORIAL";
+            document.getElementById('stepInfo').innerHTML = `
+                <span class="step-number">READY TO START</span>
+                <p class="step-desc">Click "START TUTORIAL" to begin the construction logic.</p>
+            `;
+            clear();
+        }
+
+        function redrawAll() {
+            clear();
+            for (let i = 0; i < currentStep; i++) {
+                steps[i].draw();
+            }
+        }
+
+        // Initialize
+        clear();
+        drawPoint(centerX, centerY, 'A', neonRed);
+    </script>
+</body>
+
+</html>
