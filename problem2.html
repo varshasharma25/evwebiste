@@ -96,6 +96,19 @@
                     drawLine(centerX, centerY, centerX + 110 * scale * Math.cos(3 * Math.PI / 4), centerY - 110 * scale * Math.sin(3 * Math.PI / 4), grayLine);
                     drawLine(centerX, centerY, centerX + 110 * scale * Math.cos(Math.PI / 4), centerY - 110 * scale * Math.sin(Math.PI / 4), grayLine);
                     drawPoint(centerX, centerY, 'O', darkBlue);
+
+                    // Mark Angle θ = 90°
+                    ctx.beginPath();
+                    ctx.strokeStyle = grayLine;
+                    ctx.arc(centerX, centerY, 50, -3 * Math.PI / 4, -Math.PI / 4);
+                    ctx.stroke();
+                    ctx.fillStyle = darkBlue;
+                    ctx.font = '600 12px Poppins';
+                    ctx.fillText('θ = 90°', centerX - 20, centerY - 60);
+
+                    // Label Directing Circle
+                    ctx.font = '500 13px Poppins';
+                    ctx.fillText('Directing Circle', centerX - 60, centerY - 110 * scale);
                 }
             },
             {
@@ -108,6 +121,11 @@
                     drawCircle(cx, cy, 25 * scale, darkBlue);
                     drawPoint(cx, cy, 'C', darkBlue);
                     drawPoint(centerX + 100 * scale * Math.cos(ang), centerY - 100 * scale * Math.sin(ang), 'P', redPoint);
+
+                    // Label Rolling Circle
+                    ctx.fillStyle = darkBlue;
+                    ctx.font = '500 13px Poppins';
+                    ctx.fillText('Rolling Circle', cx - 50, cy - 35 * scale);
                 }
             },
             {
@@ -121,7 +139,7 @@
                         const dAng = i * Math.PI / 4 + ang;
                         const px = cx + 25 * scale * Math.cos(dAng);
                         const py = cy - 25 * scale * Math.sin(dAng);
-                        drawPoint(px, py, '', darkBlue, 2);
+                        drawPoint(px, py, (i === 0 ? 'P' : i), darkBlue, 2);
                         drawLine(cx, cy, px, py, grayLine);
                     }
                 }
@@ -137,8 +155,19 @@
                 }
             },
             {
-                title: "Step 5: Path of Center C",
-                desc: "Draw an arc from O through the center of the rolling circle. Mark positions C1, C2... C8.",
+                title: "Step 5: Division Arcs",
+                desc: "Draw concentric arcs from center O passing through points 1, 2, 3... of the rolling circle on the directing arc.",
+                draw: () => {
+                    for (let i = 1; i <= 4; i++) {
+                        // Radius = sqrt(75^2 + 25^2 + 2*75*25*cos(i*PI/4))
+                        const rad = Math.sqrt(6250 + 3750 * Math.cos(i * Math.PI / 4)) * scale;
+                        drawArc(centerX, centerY, rad, -3 * Math.PI / 4, -Math.PI / 4, grayLine, true);
+                    }
+                }
+            },
+            {
+                title: "Step 6: Path of Center C",
+                desc: "Draw an arc from O through the center C of the rolling circle. Mark positions C1, C2... C8.",
                 draw: () => {
                     drawArc(centerX, centerY, 75 * scale, -3 * Math.PI / 4, -Math.PI / 4, 'rgba(25, 118, 210, 0.2)', true);
                     for (let i = 1; i <= 8; i++) {
@@ -148,25 +177,32 @@
                 }
             },
             {
-                title: "Step 6: Locating Points P1 to P8",
-                desc: "Mark points P1 to P8 at the intersection of rolling circle radius and the respective division arcs.",
+                title: "Step 7: Locating Points P1 to P8",
+                desc: "After step 6 take the measurement in the compass of the radius of the rolling circle and make arc from c1 on the line coming from point 1 then make arc from c2 on the line coming from point 2 and continue this step upto making arc from c8 to line comping from point 8.",
                 draw: () => {
                     for (let i = 1; i <= 8; i++) {
                         const t = i * (Math.PI / 2) / 8;
                         const theta = 3 * Math.PI / 4 - t;
                         const psi = 3 * Math.PI / 4 + 3 * t;
-                        const px = centerX + 75 * scale * Math.cos(theta) + 25 * scale * Math.cos(psi);
-                        const py = centerY - (75 * scale * Math.sin(theta) + 25 * scale * Math.sin(psi));
+
+                        const cx = centerX + 75 * scale * Math.cos(theta);
+                        const cy = centerY - 75 * scale * Math.sin(theta);
+
+                        const px = cx + 25 * scale * Math.cos(psi);
+                        const py = cy - 25 * scale * Math.sin(psi);
+
+                        // Draw a small "compass arc" to show the intersection logic
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(211, 47, 47, 0.3)';
+                        ctx.arc(cx, cy, 25 * scale, psi - 0.2, psi + 0.2);
+                        ctx.stroke();
+
                         drawPoint(px, py, 'P' + i, redPoint, 3);
-                    }
-                    for (let i = 1; i <= 4; i++) {
-                        const r_proj = (100 - i * (50 / 4)) * scale;
-                        drawArc(centerX, centerY, r_proj, -3 * Math.PI / 4, -Math.PI / 4, 'rgba(0,0,0,0.05)', true);
                     }
                 }
             },
             {
-                title: "Step 7: Perfect Hypocycloid Line",
+                title: "Step 8: Perfect Hypocycloid Line",
                 desc: "Join points P1 to P8 with a smooth green curve to complete the hypocycloid. ✨",
                 draw: () => {
                     const ps = [];
@@ -183,7 +219,7 @@
                         onUpdate: function () {
                             const p = this.progress();
                             clear();
-                            for (let j = 0; j < currentStepIdx; j++) if (j !== 6) steps[j].draw();
+                            for (let j = 0; j < currentStepIdx; j++) if (j !== 7) steps[j].draw();
                             ctx.beginPath(); ctx.strokeStyle = greenCurve; ctx.lineWidth = 4;
                             ctx.setLineDash([]);
                             ctx.moveTo(ps[0].x, ps[0].y);
@@ -224,8 +260,9 @@
             document.getElementById('stepTitle').innerText = step.title;
             document.getElementById('stepDesc').innerText = step.desc;
             clear();
-            for (let i = 0; i <= currentStepIdx; i++) { if (i !== 6 || currentStepIdx > 6) steps[i].draw(); }
-            if (currentStepIdx === 6) steps[6].draw();
+            const lastIdx = steps.length - 1;
+            for (let i = 0; i <= currentStepIdx; i++) { if (i !== lastIdx || currentStepIdx > lastIdx) steps[i].draw(); }
+            if (currentStepIdx === lastIdx) steps[lastIdx].draw();
             document.getElementById('prevBtn').disabled = (currentStepIdx === 0);
             document.getElementById('nextBtn').innerText = (currentStepIdx === steps.length - 1) ? "Finished" : "Next Step";
         }
