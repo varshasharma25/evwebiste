@@ -98,8 +98,8 @@
 
         const steps = [
             {
-                title: "Step 1: Pole and Reference Ray",
-                desc: "Mark point A as pole. Draw a horizontal reference ray AX extended (towards the right).",
+                title: "Step 1",
+                desc: "mark a point a as pole. draw a horizontal reference ray AX extended.",
                 draw: () => {
                     drawPoint(centerX, centerY, 'A (Pole)', redPoint);
                     drawLine(centerX, centerY, canvas.width - 50, centerY, darkBlue, false);
@@ -108,7 +108,7 @@
                 }
             },
             {
-                title: "Step 2: Locating Point C",
+                title: "Step 2",
                 desc: "Mark point C on ray AX such that AC = 40 mm (Lead of spiral).",
                 draw: () => {
                     const pC = getSpiralPoint(0);
@@ -117,12 +117,12 @@
                 }
             },
             {
-                title: "Step 3: Locating Point B",
+                title: "Step 3",
                 desc: "Construct ∠BAC = 45°. Draw a ray and extend the line AB = 30 mm boldly.",
                 draw: () => {
                     const pB = getSpiralPoint(-45);
                     drawPoint(pB.x, pB.y, 'B (30mm)', darkBlue);
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 3;
                     drawLine(centerX, centerY, pB.x, pB.y, '#000', false);
                     ctx.lineWidth = 1;
                     ctx.beginPath();
@@ -130,13 +130,11 @@
                     ctx.arc(centerX, centerY, 40, -Math.PI / 4, 0);
                     ctx.stroke();
                     ctx.fillText('45°', centerX + 45, centerY - 15);
-                    const pC = getSpiralPoint(0);
-                    drawLine(pB.x, pB.y, pC.x, pC.y, 'rgba(0,0,0,0.1)', true);
                 }
             },
             {
-                title: "Step 4: Initial Offset Point",
-                desc: "Now make a line of 20 mm from the pole A at 45 degree before the 30 mm line.",
+                title: "Step 4",
+                desc: "now make a line of 20 mm from the pole A at 45 degree before the 30 mm line.",
                 draw: () => {
                     const p20 = getSpiralPoint(-90);
                     drawPoint(p20.x, p20.y, '20mm', darkBlue, 3);
@@ -144,43 +142,44 @@
                 }
             },
             {
-                title: "Step 5: Points 50mm & 60mm",
-                desc: "Mark lines of 50mm and 60mm at 45° intervals after Point C.",
+                title: "Step 4 (cont.)",
+                desc: "now make a line of 50mm from the pole A at 45 degree after the 40 mm line.",
                 draw: () => {
                     const p50 = getSpiralPoint(45);
-                    const p60 = getSpiralPoint(90);
                     drawPoint(p50.x, p50.y, '50mm', darkBlue, 3);
-                    drawPoint(p60.x, p60.y, '60mm', darkBlue, 3);
                     drawLine(centerX, centerY, p50.x, p50.y, grayLine, true);
+                }
+            },
+            {
+                title: "Step 5",
+                desc: "now make a line of 60mm from the pole A at 45 degree after the 50 mm line.",
+                draw: () => {
+                    const p60 = getSpiralPoint(90);
+                    drawPoint(p60.x, p60.y, '60mm', darkBlue, 3);
                     drawLine(centerX, centerY, p60.x, p60.y, grayLine, true);
                 }
             },
             {
-                title: "Step 6: Points 70mm & 80mm",
-                desc: "Mark lines of 70mm and 80mm at 45° intervals after Point 60mm.",
+                title: "Step 6",
+                desc: "now make a line of 70mm from the pole A at 45 degree after the 60 mm line.",
                 draw: () => {
                     const p70 = getSpiralPoint(135);
-                    const p80 = getSpiralPoint(180);
                     drawPoint(p70.x, p70.y, '70mm', darkBlue, 3);
-                    drawPoint(p80.x, p80.y, '80mm', darkBlue, 3);
                     drawLine(centerX, centerY, p70.x, p70.y, grayLine, true);
+                }
+            },
+            {
+                title: "Step 7",
+                desc: "now make a line of 80mm from the pole A at 45 degree after the 70 mm line.",
+                draw: () => {
+                    const p80 = getSpiralPoint(180);
+                    drawPoint(p80.x, p80.y, '80mm', darkBlue, 3);
                     drawLine(centerX, centerY, p80.x, p80.y, grayLine, true);
                 }
             },
             {
-                title: "Step 7: Identifying the Points",
-                desc: "All points are now marked on their respective radial lines.",
-                draw: () => {
-                    const angles = [-180, -135, -90, -45, 0, 45, 90, 135, 180];
-                    angles.forEach(a => {
-                        const p = getSpiralPoint(a);
-                        drawPoint(p.x, p.y, '', redPoint, 3);
-                    });
-                }
-            },
-            {
-                title: "Step 8: Archimedean Spiral",
-                desc: "Join all the points with a smooth curve. This resulting path is the Archimedean Spiral. ✨",
+                title: "Step 8",
+                desc: "now join all the pints and name the joining like as archimedean spiral.",
                 draw: () => {
                     const ps = [];
                     for (let a = -180; a <= 180; a += 1) {
