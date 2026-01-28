@@ -24,18 +24,19 @@
     <header>
         <div class="container">
             <h1>Problem 2: Archimedean Spiral</h1>
-            <p>Interactive Step-by-Step Construction</p>
+            <p>Interactive Step-by-Step Construction (A is Pole, AB=30mm, AC=40mm)</p>
         </div>
     </header>
 
     <main class="container">
         <div class="card">
             <div class="drawing-display">
-                <img src="images/spiral_final.png" alt="Archimedean Spiral Final" class="drawing-img">
+                <img src="images/archimedean_spiral_ref.png" alt="Archimedean Spiral Reference" class="drawing-img">
             </div>
             <div class="data-box">
                 <p><strong>GIVEN DATA:</strong></p>
-                <p>AB = 30 mm, AC = 40 mm, ∠BAC = 45°. A is pole. 1 Convolution.</p>
+                <p>AB = 30 mm | AC = 40 mm | ∠BAC = 45°</p>
+                <p>Lead of Spiral = 80 mm (One full convolution)</p>
             </div>
             <div style="text-align: center;">
                 <button class="btn" onclick="startTutorial()">Watch Step-by-Step Formation</button>
@@ -49,7 +50,7 @@
             </div>
 
             <div class="drawing-display">
-                <canvas id="tutorialCanvas" width="800" height="500"></canvas>
+                <canvas id="tutorialCanvas" width="800" height="550"></canvas>
             </div>
 
             <div class="step-controls">
@@ -69,10 +70,10 @@
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const scale = 5;
+        const scale = 3.2;
 
         const darkBlue = '#1976d2';
-        const grayLine = 'rgba(0, 0, 0, 0.1)';
+        const grayLine = 'rgba(0, 0, 0, 0.2)';
         const greenCurve = '#388e3c';
         const redPoint = '#d32f2f';
 
@@ -80,91 +81,121 @@
 
         function clear() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#f8fbff';
+            ctx.strokeStyle = '#f0f4f8';
             ctx.setLineDash([]);
             for (let i = 0; i < canvas.width; i += 50) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
             for (let i = 0; i < canvas.height; i += 50) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke(); }
         }
 
+        function getSpiralPoint(angleDeg) {
+            const theta = (angleDeg * Math.PI) / 180;
+            const r = (40 + (40 / Math.PI) * theta) * scale;
+            return {
+                x: centerX + r * Math.cos(theta),
+                y: centerY + r * Math.sin(theta)
+            };
+        }
+
         const steps = [
             {
-                title: "Step 1: Pole A & Ray AX",
-                desc: "Mark point A as pole. Draw a horizontal reference ray AX extended.",
+                title: "Step 1: Pole and Reference Ray",
+                desc: "Mark point A as pole. Draw a horizontal reference ray AX extended (towards the right).",
                 draw: () => {
-                    drawLine(centerX, centerY, centerX + 250, centerY, grayLine, true);
-                    drawPoint(centerX, centerY, 'A', redPoint);
+                    drawPoint(centerX, centerY, 'A (Pole)', redPoint);
+                    drawLine(centerX, centerY, canvas.width - 50, centerY, darkBlue, false);
+                    ctx.fillStyle = darkBlue;
+                    ctx.fillText('X', canvas.width - 45, centerY + 5);
                 }
             },
             {
-                title: "Step 2: Point C",
+                title: "Step 2: Locating Point C",
                 desc: "Mark point C on ray AX such that AC = 40 mm (Lead of spiral).",
                 draw: () => {
-                    drawPoint(centerX + 40 * scale, centerY, 'C', redPoint);
+                    const pC = getSpiralPoint(0);
+                    drawPoint(pC.x, pC.y, 'C (40mm)', darkBlue);
+                    drawLine(centerX, centerY, pC.x, pC.y, darkBlue, false);
                 }
             },
             {
-                title: "Step 3: Point B at 45°",
+                title: "Step 3: Locating Point B",
                 desc: "Construct ∠BAC = 45°. Draw a ray and extend the line AB = 30 mm boldly.",
                 draw: () => {
-                    const ang = -45 * Math.PI / 180;
-                    const bx = centerX + Math.cos(ang) * 30 * scale;
-                    const by = centerY + Math.sin(ang) * 30 * scale;
-                    drawLine(centerX, centerY, centerX + Math.cos(ang) * 220, centerY + Math.sin(ang) * 220, grayLine, true);
-                    drawLine(centerX, centerY, bx, by, darkBlue, false, 2); // Bold line to B
-                    drawPoint(bx, by, 'B', redPoint);
+                    const pB = getSpiralPoint(-45);
+                    drawPoint(pB.x, pB.y, 'B (30mm)', darkBlue);
+                    ctx.lineWidth = 2;
+                    drawLine(centerX, centerY, pB.x, pB.y, '#000', false);
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.strokeStyle = grayLine;
+                    ctx.arc(centerX, centerY, 40, -Math.PI / 4, 0);
+                    ctx.stroke();
+                    ctx.fillText('45°', centerX + 45, centerY - 15);
+                    const pC = getSpiralPoint(0);
+                    drawLine(pB.x, pB.y, pC.x, pC.y, 'rgba(0,0,0,0.1)', true);
                 }
             },
             {
-                title: "Step 4: Radial Divisions",
-                desc: "Divide the 360° angular space into 8 equal segments (45° intervals).",
+                title: "Step 4: Initial Offset Point",
+                desc: "Now make a line of 20 mm from the pole A at 45 degree before the 30 mm line.",
                 draw: () => {
-                    for (let i = 1; i <= 8; i++) {
-                        const ang = -(i * 45) * Math.PI / 180;
-                        drawLine(centerX, centerY, centerX + Math.cos(ang) * 240, centerY + Math.sin(ang) * 240, 'rgba(0,0,0,0.03)');
-                    }
+                    const p20 = getSpiralPoint(-90);
+                    drawPoint(p20.x, p20.y, '20mm', darkBlue, 3);
+                    drawLine(centerX, centerY, p20.x, p20.y, grayLine, true);
                 }
             },
             {
-                title: "Step 5: Radius Dividers",
-                desc: "Divide the lead AC (40mm) into 8 equal parts to find radius increments.",
+                title: "Step 5: Points 50mm & 60mm",
+                desc: "Mark lines of 50mm and 60mm at 45° intervals after Point C.",
                 draw: () => {
-                    for (let i = 1; i <= 8; i++) {
-                        const r = (40 * scale / 8) * i;
-                        drawPoint(centerX + r, centerY, '', 'rgba(25, 118, 210, 0.2)', 2);
-                    }
+                    const p50 = getSpiralPoint(45);
+                    const p60 = getSpiralPoint(90);
+                    drawPoint(p50.x, p50.y, '50mm', darkBlue, 3);
+                    drawPoint(p60.x, p60.y, '60mm', darkBlue, 3);
+                    drawLine(centerX, centerY, p50.x, p50.y, grayLine, true);
+                    drawLine(centerX, centerY, p60.x, p60.y, grayLine, true);
                 }
             },
             {
-                title: "Step 6: Locating P1-P8",
-                desc: "Locate points P1 to P8 where radial lines meet the respective radius divisions.",
+                title: "Step 6: Points 70mm & 80mm",
+                desc: "Mark lines of 70mm and 80mm at 45° intervals after Point 60mm.",
                 draw: () => {
-                    for (let i = 1; i <= 8; i++) {
-                        const ang = -(i * 45) * Math.PI / 180;
-                        const r = (40 * scale / 8) * i;
-                        drawPoint(centerX + Math.cos(ang) * r, centerY + Math.sin(ang) * r, 'P' + i, redPoint, 3);
-                    }
+                    const p70 = getSpiralPoint(135);
+                    const p80 = getSpiralPoint(180);
+                    drawPoint(p70.x, p70.y, '70mm', darkBlue, 3);
+                    drawPoint(p80.x, p80.y, '80mm', darkBlue, 3);
+                    drawLine(centerX, centerY, p70.x, p70.y, grayLine, true);
+                    drawLine(centerX, centerY, p80.x, p80.y, grayLine, true);
                 }
             },
             {
-                title: "Step 7: Final Spiral Formation",
-                desc: "Join pole A and all points P smoothly to form the Archimedean spiral. Construction complete! ✨",
+                title: "Step 7: Identifying the Points",
+                desc: "All points are now marked on their respective radial lines.",
                 draw: () => {
-                    const pts = [{ x: centerX, y: centerY }];
-                    for (let i = 1; i <= 8; i++) {
-                        const ang = -(i * 45) * Math.PI / 180;
-                        const r = (40 * scale / 8) * i;
-                        pts.push({ x: centerX + Math.cos(ang) * r, y: centerY + Math.sin(ang) * r });
+                    const angles = [-180, -135, -90, -45, 0, 45, 90, 135, 180];
+                    angles.forEach(a => {
+                        const p = getSpiralPoint(a);
+                        drawPoint(p.x, p.y, '', redPoint, 3);
+                    });
+                }
+            },
+            {
+                title: "Step 8: Archimedean Spiral",
+                desc: "Join all the points with a smooth curve. This resulting path is the Archimedean Spiral. ✨",
+                draw: () => {
+                    const ps = [];
+                    for (let a = -180; a <= 180; a += 1) {
+                        ps.push(getSpiralPoint(a));
                     }
                     gsap.to({}, {
                         duration: 3,
                         onUpdate: function () {
-                            const prog = this.progress();
+                            const p = this.progress();
                             clear();
-                            for (let j = 0; j < currentStepIdx; j++) if (j !== 6) steps[j].draw();
+                            for (let j = 0; j < steps.length - 1; j++) steps[j].draw();
                             ctx.beginPath(); ctx.strokeStyle = greenCurve; ctx.lineWidth = 4;
                             ctx.setLineDash([]);
-                            ctx.moveTo(pts[0].x, pts[0].y);
-                            for (let i = 1; i < pts.length * prog; i++) { ctx.lineTo(pts[i].x, pts[i].y); }
+                            ctx.moveTo(ps[0].x, ps[0].y);
+                            for (let i = 1; i < ps.length * p; i++) { ctx.lineTo(ps[i].x, ps[i].y); }
                             ctx.stroke();
                         }
                     });
@@ -172,14 +203,18 @@
             }
         ];
 
-        function drawLine(x1, y1, x2, y2, color, dashed = false, width = 1) {
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = width;
+        function drawLine(x1, y1, x2, y2, color, dashed = false) {
+            ctx.beginPath(); ctx.strokeStyle = color;
             if (dashed) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
             ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
         }
+        function drawArc(x, y, r, start, end, color, dashed = false) {
+            ctx.beginPath(); ctx.strokeStyle = color; if (dashed) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
+            ctx.arc(x, y, r, start, end); ctx.stroke();
+        }
         function drawPoint(x, y, label, color, size = 4) {
             ctx.beginPath(); ctx.fillStyle = color; ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
-            if (label) { ctx.fillStyle = darkBlue; ctx.font = '600 11px Poppins'; ctx.fillText(label, x + 6, y - 6); }
+            if (label) { ctx.fillStyle = darkBlue; ctx.font = '600 12px Poppins'; ctx.fillText(label, x + 8, y - 8); }
         }
 
         function startTutorial() {
@@ -193,8 +228,9 @@
             document.getElementById('stepTitle').innerText = step.title;
             document.getElementById('stepDesc').innerText = step.desc;
             clear();
-            for (let i = 0; i <= currentStepIdx; i++) { if (i !== 6 || currentStepIdx > 6) steps[i].draw(); }
-            if (currentStepIdx === 6) steps[6].draw();
+            for (let i = 0; i <= currentStepIdx; i++) {
+                if (i !== steps.length - 1 || currentStepIdx === steps.length - 1) steps[i].draw();
+            }
             document.getElementById('prevBtn').disabled = (currentStepIdx === 0);
             document.getElementById('nextBtn').innerText = (currentStepIdx === steps.length - 1) ? "Finished" : "Next Step";
         }
