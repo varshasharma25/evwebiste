@@ -1,6 +1,6 @@
 # evwebiste
 Interactive Engineering Visualization virtual lab with step-by-step animated curve constructions.   
-📘 Engineering Visualization – Interactive Virtual Lab
+📘 Engineering Visualization :-Interactive Virtual Lab
 
 This repository contains an interactive, animated Engineering Visualization website developed as part of the First Year Engineering curriculum.
 
