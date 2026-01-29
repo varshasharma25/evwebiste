@@ -177,26 +177,59 @@
                 }
             },
             {
-                title: "Step 7: Locating Points P1 to P8",
-                desc: "After step 6 take the measurement in the compass of the radius of the rolling circle and make arc from c1 on the line coming from point 1 then make arc from c2 on the line coming from point 2 and continue this step upto making arc from c8 to line comping from point 8.",
+                title: "Step 7.1: Locating Point P1",
+                desc: "Take the measurement in the compass of the radius of the rolling circle and make arc from C1 on the line coming from point 1 and mark the point as P1.",
                 draw: () => {
-                    for (let i = 1; i <= 8; i++) {
+                    const i = 1;
+                    const t = i * (Math.PI / 2) / 8;
+                    const theta = 3 * Math.PI / 4 - t;
+                    const psi = 3 * Math.PI / 4 + 3 * t;
+                    const cx = centerX + 75 * scale * Math.cos(theta);
+                    const cy = centerY - 75 * scale * Math.sin(theta);
+                    const px = cx + 25 * scale * Math.cos(psi);
+                    const py = cy - 25 * scale * Math.sin(psi);
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(211, 47, 47, 0.3)';
+                    ctx.arc(cx, cy, 25 * scale, psi - 0.2, psi + 0.2);
+                    ctx.stroke();
+                    drawPoint(px, py, 'P' + i, redPoint, 3);
+                }
+            },
+            {
+                title: "Step 7.2: Locating Point P2",
+                desc: "Make arc from C2 on the line coming from point 2 and mark point as P2.",
+                draw: () => {
+                    const i = 2;
+                    const t = i * (Math.PI / 2) / 8;
+                    const theta = 3 * Math.PI / 4 - t;
+                    const psi = 3 * Math.PI / 4 + 3 * t;
+                    const cx = centerX + 75 * scale * Math.cos(theta);
+                    const cy = centerY - 75 * scale * Math.sin(theta);
+                    const px = cx + 25 * scale * Math.cos(psi);
+                    const py = cy - 25 * scale * Math.sin(psi);
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(211, 47, 47, 0.3)';
+                    ctx.arc(cx, cy, 25 * scale, psi - 0.2, psi + 0.2);
+                    ctx.stroke();
+                    drawPoint(px, py, 'P' + i, redPoint, 3);
+                }
+            },
+            {
+                title: "Step 7.3: Continuing Points P3 to P8",
+                desc: "Continue this process for centers C3 to C8 and mark points P3 to P8 on respective radial lines.",
+                draw: () => {
+                    for (let i = 3; i <= 8; i++) {
                         const t = i * (Math.PI / 2) / 8;
                         const theta = 3 * Math.PI / 4 - t;
                         const psi = 3 * Math.PI / 4 + 3 * t;
-
                         const cx = centerX + 75 * scale * Math.cos(theta);
                         const cy = centerY - 75 * scale * Math.sin(theta);
-
                         const px = cx + 25 * scale * Math.cos(psi);
                         const py = cy - 25 * scale * Math.sin(psi);
-
-                        // Draw a small "compass arc" to show the intersection logic
                         ctx.beginPath();
                         ctx.strokeStyle = 'rgba(211, 47, 47, 0.3)';
                         ctx.arc(cx, cy, 25 * scale, psi - 0.2, psi + 0.2);
                         ctx.stroke();
-
                         drawPoint(px, py, 'P' + i, redPoint, 3);
                     }
                 }
@@ -219,7 +252,7 @@
                         onUpdate: function () {
                             const p = this.progress();
                             clear();
-                            for (let j = 0; j < currentStepIdx; j++) if (j !== 7) steps[j].draw();
+                            for (let j = 0; j < currentStepIdx; j++) if (j !== 9) steps[j].draw();
                             ctx.beginPath(); ctx.strokeStyle = greenCurve; ctx.lineWidth = 4;
                             ctx.setLineDash([]);
                             ctx.moveTo(ps[0].x, ps[0].y);
